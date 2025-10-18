@@ -1,0 +1,39 @@
+# Python .dockerignore file
+# This tells Docker which files to ignore when building the image
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Logs
+*.log
+
+# Test files (optional - remove if you want tests in container)
+tests/
+test_*.py
+*_test.py

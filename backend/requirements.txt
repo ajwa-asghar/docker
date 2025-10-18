@@ -1,0 +1,6 @@
+# FastAPI and ASGI server for our Python backend
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Additional dependencies for CORS support
+# (FastAPI includes this, but being explicit for learning)

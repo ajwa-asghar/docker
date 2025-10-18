@@ -1,0 +1,84 @@
+# Docker Compose file for our learning project
+# This file defines how our services (containers) work together
+
+# Note: version is no longer required in Docker Compose v2
+
+# Define our services (containers)
+services:
+  # Backend service - our Python FastAPI application
+  backend:
+    # Build the Docker image from the Dockerfile in ./backend directory
+    build: ./backend
+    
+    # Name the container (optional, but helpful for debugging)
+    container_name: docker-learning-backend
+    
+    # Expose port 8000 from container to host
+    # Format: "host_port:container_port"
+    ports:
+      - "8000:8000"
+    
+    # Environment variables for the container
+    environment:
+      - PYTHONUNBUFFERED=1  # Ensures Python output is sent straight to terminal
+    
+    # Restart policy: restart container if it stops unexpectedly
+    restart: unless-stopped
+    
+    # Health check to verify the service is running properly
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend service - our React application
+  frontend:
+    # Build the Docker image from the Dockerfile in ./frontend directory
+    build: ./frontend
+    
+    # Name the container (optional, but helpful for debugging)
+    container_name: docker-learning-frontend
+    
+    # Expose port 3000 from container to host
+    # Format: "host_port:container_port"
+    ports:
+      - "3000:3000"
+    
+    # Environment variables for the container
+    environment:
+      - HOST=0.0.0.0  # Allow connections from outside container
+      - PORT=3000     # Port for React dev server
+    
+    # Restart policy: restart container if it stops unexpectedly
+    restart: unless-stopped
+    
+    # This service depends on the backend service
+    # Docker Compose will start backend first, then frontend
+    # This ensures backend is ready when frontend tries to connect
+    depends_on:
+      - backend  # Simple dependency without health check
+    
+    # Health check to verify the service is running properly
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Define networks for our services
+# By default, Docker Compose creates a network where all services can communicate
+# using their service names as hostnames (e.g., 'backend', 'frontend')
+networks:
+  default:
+    # Name the network for easier identification
+    name: docker-learning-network
+    driver: bridge  # Use bridge network (default, but explicit for learning)
+
+# Optional: Define volumes for persistent data
+# Uncomment if you need to persist data between container restarts
+# volumes:
+#   backend_data:
+#   frontend_data:
